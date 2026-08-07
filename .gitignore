@@ -12,3 +12,6 @@ family-tree-backup-*.json
 # Supabase CLI scratch, if it is ever used here.
 supabase/.temp/
 supabase/.branches/
+
+# Machine-local permission grants — changes constantly, means nothing to anyone else.
+.claude/settings.local.json
