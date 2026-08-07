@@ -1,0 +1,7 @@
+# The family tree is open to anyone with the link, but should not turn up in
+# search results for a relative's name. The noindex meta tag in index.html is
+# the instruction that actually counts; this file stops well-behaved crawlers
+# fetching the pages at all.
+
+User-agent: *
+Disallow: /

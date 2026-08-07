@@ -1,0 +1,14 @@
+# The tree is plain files with no build step, so there is very little to ignore.
+
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+
+# Backups downloaded from the admin panel. Keep these somewhere private —
+# they contain the full suggestion history including contributors' names.
+family-tree-backup-*.json
+
+# Supabase CLI scratch, if it is ever used here.
+supabase/.temp/
+supabase/.branches/

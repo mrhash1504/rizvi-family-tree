@@ -1,0 +1,7 @@
+# Normalise to LF in the repository, whatever the editor writes locally.
+# Without this, editing on Windows rewrites whole files as line-ending-only
+# changes and every diff becomes unreadable.
+* text=auto eol=lf
+
+# The source document is binary — never try to diff or convert it.
+*.docx binary

@@ -1,0 +1,64 @@
+# Weekly snapshot of the family tree.
+#
+# Reads the live tree out of Supabase and commits it to the repo. That single
+# action keeps the offline fallback current, stops the Supabase free plan
+# pausing the project for inactivity, and builds a permanent version history
+# of the record in git.
+#
+# It needs no secrets: the `people` table is public by design and the anon key
+# already lives in assets/config.js. Nothing here expires or has to be renewed.
+
+name: Snapshot the family tree
+
+on:
+  schedule:
+    # 06:12 UTC every Monday. Odd minute on purpose — the top of the hour is
+    # when every scheduled job on GitHub fires at once and runs late.
+    - cron: '12 6 * * 1'
+  # Also runnable by hand from the Actions tab.
+  workflow_dispatch:
+
+# Least privilege: the job may commit to this repo and nothing else.
+permissions:
+  contents: write
+
+concurrency:
+  group: snapshot
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Read the tree from Supabase
+        run: node tools/snapshot.js
+
+      - name: Commit if the record changed
+        run: |
+          if [ -z "$(git status --porcelain assets/snapshot.js)" ]; then
+            echo "Nothing changed this week."
+            exit 0
+          fi
+          git config user.name  "family-tree-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/snapshot.js
+          git commit -m "Snapshot the family tree ($(date -u +%Y-%m-%d))"
+          git push
+
+      # GitHub disables scheduled workflows in a repository with no activity
+      # for 60 days. A quiet family tree could trip that, silently switching
+      # the whole safety net off, so re-arm the schedule on every run.
+      - name: Keep the schedule alive
+        if: always()
+        run: |
+          curl -fsS -X PUT \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/snapshot.yml/enable" \
+            && echo "Schedule re-armed." || echo "Could not re-arm; harmless if already enabled."
