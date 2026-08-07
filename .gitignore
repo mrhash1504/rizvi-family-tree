@@ -13,5 +13,5 @@ family-tree-backup-*.json
 supabase/.temp/
 supabase/.branches/
 
-# Machine-local permission grants — changes constantly, means nothing to anyone else.
+# Machine-local permission grants â€” changes constantly, means nothing elsewhere.
 .claude/settings.local.json
