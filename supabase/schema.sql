@@ -250,6 +250,42 @@ update public.people p
 drop view if exists public.pending_counts;
 
 
+-- ── Photo uploads ──────────────────────────────────────────────────────
+-- One bucket, two prefixes: relatives may only write into pending/, and a
+-- photo reaches approved/ only after the owner has looked at it.
+
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('photos', 'photos', true, 5242880,
+        array['image/jpeg','image/png','image/webp'])
+on conflict (id) do update
+   set public = true,
+       file_size_limit = 5242880,
+       allowed_mime_types = array['image/jpeg','image/png','image/webp'];
+
+drop policy if exists "anyone uploads a pending photo" on storage.objects;
+create policy "anyone uploads a pending photo"
+  on storage.objects for insert to anon, authenticated
+  with check (
+    bucket_id = 'photos'
+    and (storage.foldername(name))[1] = 'pending'
+  );
+
+-- Deliberately NO select policy for anon.
+--
+-- The bucket is public, and Supabase serves /object/public/<path> without
+-- consulting RLS, so approved photographs load for every visitor. RLS governs
+-- listing — and granting anon select here would let anyone holding the anon
+-- key enumerate the pending folder, which makes the random filenames
+-- pointless. Tested: with no such policy, a list request returns [].
+drop policy if exists "photos are publicly readable" on storage.objects;
+
+drop policy if exists "owner manages photos" on storage.objects;
+create policy "owner manages photos"
+  on storage.objects for all to authenticated
+  using (bucket_id = 'photos')
+  with check (bucket_id = 'photos');
+
+
 -- ── Done ───────────────────────────────────────────────────────────────
 -- Next: run supabase/seed.sql, then create your admin user under
 -- Authentication → Users → Add user (leave "Auto Confirm" on).

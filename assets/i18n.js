@@ -117,6 +117,15 @@ const STRINGS = {
     errServer: (code, detail) => `The database returned an error (${code}). Nothing was lost; the suggestion is still in the queue. Details: ${detail}`,
     errNetwork: 'Could not reach the database. Check your connection and try again — nothing was lost.',
 
+    photoSection: 'Photograph',
+    photoHint: 'JPEG, PNG or WebP, up to 5 MB. It will not appear on the tree until the keeper of the record has approved it.',
+    photoReplaceHint: 'There is already a photograph. Choosing a new one suggests replacing it.',
+    photoUploading: 'Uploading…',
+    photoReady: 'Uploaded. Press Submit below to send it for review.',
+    photoBadType: 'That file is not a JPEG, PNG or WebP image.',
+    photoTooBig: 'That image is larger than 5 MB. Please choose a smaller one.',
+    adminPhotoReplaces: 'Replaces the current photograph',
+
     adminHistory: 'Decided',
     adminHistoryIntro: 'Everything you have already decided. Nothing is ever deleted — rejected suggestions are kept too, so you can look up what was proposed and when you decided it.',
     adminHistoryLoading: 'Loading…',
@@ -243,6 +252,15 @@ const STRINGS = {
     errExpired: 'آپ کی لاگ اِن مدت ختم ہو گئی ہے۔ باہر نکل کر دوبارہ لاگ اِن کریں، پھر کوشش کریں — تجویز اب بھی قطار میں موجود ہے۔',
     errServer: (code, detail) => `ڈیٹابیس نے خرابی ظاہر کی (${code})۔ کچھ ضائع نہیں ہوا؛ تجویز اب بھی قطار میں ہے۔ تفصیل: ${detail}`,
     errNetwork: 'ڈیٹابیس تک رسائی نہیں ہو سکی۔ اپنا انٹرنیٹ دیکھ کر دوبارہ کوشش کریں — کچھ ضائع نہیں ہوا۔',
+
+    photoSection: 'تصویر',
+    photoHint: 'JPEG، PNG یا WebP، زیادہ سے زیادہ ۵ ایم بی۔ منتظمِ ریکارڈ کی منظوری تک یہ شجرے پر نہیں دکھائی دے گی۔',
+    photoReplaceHint: 'ایک تصویر پہلے سے موجود ہے۔ نئی تصویر منتخب کرنے کا مطلب اسے بدلنے کی تجویز ہے۔',
+    photoUploading: 'اپ لوڈ ہو رہی ہے…',
+    photoReady: 'اپ لوڈ ہو گئی۔ جائزے کے لیے بھیجنے کو نیچے "بھیجیں" دبائیں۔',
+    photoBadType: 'یہ فائل JPEG، PNG یا WebP تصویر نہیں ہے۔',
+    photoTooBig: 'یہ تصویر ۵ ایم بی سے بڑی ہے۔ براہِ کرم چھوٹی تصویر منتخب کریں۔',
+    adminPhotoReplaces: 'موجودہ تصویر کی جگہ لے گی',
 
     adminHistory: 'فیصلہ شدہ',
     adminHistoryIntro: 'وہ سب کچھ جس پر آپ فیصلہ کر چکے ہیں۔ کچھ بھی حذف نہیں ہوتا — مسترد شدہ تجاویز بھی محفوظ رہتی ہیں، تاکہ آپ دیکھ سکیں کہ کیا تجویز ہوا تھا اور آپ نے کب فیصلہ کیا۔',

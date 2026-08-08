@@ -73,11 +73,26 @@
       const displayName = existing ? existing.name : (g.person_name || '—');
       const parent = g.parent_id && state.byId.get(g.parent_id);
 
-      const diffs = g.rows.map(r => `<div class="diff-row">
-        <span class="k">${esc(fieldLabel(r.field))}</span>
-        <span class="old" ${r.old_value ? '' : 'hidden'}>${esc(r.old_value)}</span>
-        <span class="new" data-script="${r.field.endsWith('_ur') ? 'ur' : 'en'}">${esc(r.new_value) || `<i>${esc(I18N.t('adminEmpty'))}</i>`}</span>
-      </div>`).join('');
+      const diffs = g.rows.map(r => {
+        // A photo has to be looked at, not read. Showing the URL as text
+        // would mean approving an image sight unseen.
+        if (r.field === 'photo' && r.new_value) {
+          return `<div class="diff-row diff-photo">
+            <span class="k">${esc(fieldLabel(r.field))}</span>
+            <span class="new">
+              <a href="${esc(r.new_value)}" target="_blank" rel="noopener noreferrer">
+                <img class="photo-review" src="${esc(r.new_value)}" alt="" loading="lazy">
+              </a>
+              ${r.old_value ? `<em class="hint">${esc(I18N.t('adminPhotoReplaces'))}</em>` : ''}
+            </span>
+          </div>`;
+        }
+        return `<div class="diff-row">
+          <span class="k">${esc(fieldLabel(r.field))}</span>
+          <span class="old" ${r.old_value ? '' : 'hidden'}>${esc(r.old_value)}</span>
+          <span class="new" data-script="${r.field.endsWith('_ur') ? 'ur' : 'en'}">${esc(r.new_value) || `<i>${esc(I18N.t('adminEmpty'))}</i>`}</span>
+        </div>`;
+      }).join('');
 
       return `<article class="sugg" data-key="${esc(g.key)}">
         <div class="sugg-head">

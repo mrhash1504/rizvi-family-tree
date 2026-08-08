@@ -374,6 +374,44 @@ html.urdu .node-meta { font-size: .82rem; }
 .pill.ok { background: color-mix(in srgb, var(--teal) 16%, transparent); color: var(--teal); }
 .pill.no { background: color-mix(in srgb, var(--ink-soft) 16%, transparent); color: var(--ink-soft); }
 
+/* ── Photo picker and review ──────────────────────────────────────────── */
+
+.photo-field input[type="file"] {
+  width: 100%;
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.5rem 0;
+}
+
+.photo-current,
+.photo-preview {
+  display: block;
+  max-width: 160px;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  margin-block: 0.5rem;
+}
+
+.photo-status {
+  font-size: 0.85rem;
+  color: var(--teal);
+  margin-block-start: 0.4rem;
+}
+.photo-status.bad { color: var(--danger, #a3342b); }
+
+/* Big enough in the queue to actually judge before approving. */
+.photo-review {
+  max-width: 200px;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+
+.diff-photo { align-items: start; }
+
 /* ── Portrait ─────────────────────────────────────────────────────────── */
 
 .portrait {

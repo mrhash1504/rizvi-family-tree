@@ -200,6 +200,46 @@ const Store = (() => {
       } catch (e) { return {}; }
     },
 
+    /* ── photos ───────────────────────────────────────────────────────── */
+
+    MAX_PHOTO_BYTES: 5 * 1024 * 1024,
+    PHOTO_TYPES: ['image/jpeg', 'image/png', 'image/webp'],
+
+    /* Upload to pending/. Returns the public URL, which then travels through
+     * the normal review queue as a `photo` suggestion — the image is not
+     * attached to anybody until the owner approves it. */
+    async uploadPendingPhoto(file) {
+      if (!this.PHOTO_TYPES.includes(file.type)) throw new Error('type');
+      if (file.size > this.MAX_PHOTO_BYTES) throw new Error('size');
+
+      const ext = ({ 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' })[file.type];
+      // Random name: the bucket is public-read, so an unguessable path is
+      // what keeps a pending photo from being stumbled upon.
+      const rand = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(36).slice(2));
+      const path = `pending/${rand}.${ext}`;
+
+      if (!live) return URL.createObjectURL(file);   // local mode: preview only
+
+      await ensureFreshToken();
+      const res = await fetch(`${base}/storage/v1/object/photos/${path}`, {
+        method: 'POST',
+        headers: {
+          apikey: cfg.SUPABASE_ANON_KEY,
+          Authorization: 'Bearer ' + (token || cfg.SUPABASE_ANON_KEY),
+          'Content-Type': file.type,
+          'x-upsert': 'false'
+        },
+        body: file
+      });
+      if (!res.ok) {
+        const err = new Error('upload failed: ' + res.status);
+        err.status = res.status;
+        err.detail = await res.text();
+        throw err;
+      }
+      return `${base}/storage/v1/object/public/photos/${path}`;
+    },
+
     /* ── writes from relatives ────────────────────────────────────────── */
 
     /* changes: [{ field, old_value, new_value }] */

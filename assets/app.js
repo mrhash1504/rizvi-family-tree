@@ -288,6 +288,7 @@
             ${secondary.map(k => fieldInput(k, source[k] || '', lockedList.includes(k))).join('')}
           </div>
         </details>` +
+        photoPicker(source) +
         `<div class="form-sep">${esc(I18N.t('yourName'))}</div>` +
         `<div class="form-field">
           <label for="f-author">${esc(I18N.t('yourName'))}</label>
@@ -335,6 +336,8 @@
       $('#f-author').value = localStorage.getItem('rft-author') || '';
       $('#f-relation').value = localStorage.getItem('rft-relation') || '';
     } catch (e) { /* private mode */ }
+
+    wirePhotoPicker(draftKey);
 
     // If a previous attempt was interrupted — bad signal, closed tab, dead
     // battery — put the typing back rather than making them start over.
@@ -385,6 +388,71 @@
   function convertRemaining(el) {
     const out = window.RomanUrdu.text(el.value);
     if (out !== el.value) el.value = out;
+  }
+
+  /* ── Photo picker ─────────────────────────────────────────────────────
+   * A photo is not language-specific, so it sits outside the two language
+   * blocks. The chosen file uploads straight away to a pending folder and
+   * the resulting URL goes into a hidden field, which means the ordinary
+   * change-detection and submit path carry it with no special cases.
+   *
+   * The image is attached to nobody until the owner approves it in the
+   * review queue, exactly like a text change. */
+
+  function photoPicker(source) {
+    const current = (source && source.photo) || '';
+    return `<div class="form-sep">${esc(I18N.t('photoSection'))}</div>
+      <div class="form-field photo-field">
+        ${current ? `<img class="photo-current" src="${esc(current)}" alt="">
+                     <p class="hint">${esc(I18N.t('photoReplaceHint'))}</p>` : ''}
+        <input type="file" id="photoFile" accept="image/jpeg,image/png,image/webp">
+        <p class="hint">${esc(I18N.t('photoHint'))}</p>
+        <div id="photoStatus" class="photo-status" hidden></div>
+        <img id="photoPreview" class="photo-preview" alt="" hidden>
+        <input type="hidden" id="f-photo" data-field="photo" data-script="en" value="${esc(current)}">
+      </div>`;
+  }
+
+  function wirePhotoPicker(draftKey) {
+    const input = $('#photoFile');
+    if (!input) return;
+
+    input.addEventListener('change', async () => {
+      const file = input.files && input.files[0];
+      const status = $('#photoStatus');
+      const preview = $('#photoPreview');
+      const hidden = $('#f-photo');
+      if (!file) return;
+
+      const say = (msg, bad) => {
+        status.hidden = false;
+        status.textContent = msg;
+        status.classList.toggle('bad', !!bad);
+      };
+
+      if (!Store.PHOTO_TYPES.includes(file.type)) { say(I18N.t('photoBadType'), true); input.value = ''; return; }
+      if (file.size > Store.MAX_PHOTO_BYTES)      { say(I18N.t('photoTooBig'), true);  input.value = ''; return; }
+
+      say(I18N.t('photoUploading'));
+      input.disabled = true;
+      try {
+        const url = await Store.uploadPendingPhoto(file);
+        hidden.value = url;
+        preview.src = url;
+        preview.hidden = false;
+        say(I18N.t('photoReady'));
+        hidden.closest('.form-field').classList.add('changed');
+        saveDraft(draftKey);
+      } catch (e) {
+        console.error(e);
+        say(e.message === 'type' ? I18N.t('photoBadType')
+          : e.message === 'size' ? I18N.t('photoTooBig')
+          : Store.describeError(e), true);
+        input.value = '';
+      } finally {
+        input.disabled = false;
+      }
+    });
   }
 
   /* ── Drafts ───────────────────────────────────────────────────────────
