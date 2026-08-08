@@ -23,6 +23,7 @@
     lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>',
     pencil: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
     plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
+    camera: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5A1.5 1.5 0 0 1 4.5 7h2.2l1.2-2h8.2l1.2 2h2.2A1.5 1.5 0 0 1 21 8.5v9A1.5 1.5 0 0 1 19.5 19h-15A1.5 1.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.4"/></svg>',
     info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.01"/></svg>',
     send: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 3 10.5 13.5M21 3l-6.8 18-3.7-7.5L3 9.8z"/></svg>'
   };
@@ -220,6 +221,11 @@
            <img src="${esc(p.photo)}" alt="${esc(I18N.pick(p, 'name').text)}" loading="lazy" decoding="async">
            ${cap.text ? `<figcaption${cap.isFallback ? ' dir="ltr" style="text-align:start"' : ''}>${esc(cap.text)}</figcaption>` : ''}
          </figure>`;
+    } else {
+      portrait =
+        `<button class="photo-invite" type="button" data-act="add-photo">
+           ${ICON.camera}<span>${esc(I18N.t('photoInvite'))}</span>
+         </button>`;
     }
 
     $('#sheetBody').innerHTML =
@@ -281,6 +287,11 @@
         // fields in its collapsed section, and someone filling those in needs
         // this just as much.
         romanToggleHTML() +
+        // First, not last. Adding a photograph is the most valuable thing a
+        // relative can do here and takes one tap; below seven text fields and
+        // a collapsed section it sat 2900px down a 4400px form, which is to
+        // say it may as well not have existed.
+        photoPicker(source) +
         primary.map(k => fieldInput(k, source[k] || '', lockedList.includes(k))).join('') +
         `<details class="lang-alt"${filledInOther ? ' open' : ''}>
           <summary>${esc(otherLabel)} <span class="hint">${esc(I18N.t('otherLangHint'))}</span></summary>
@@ -288,7 +299,6 @@
             ${secondary.map(k => fieldInput(k, source[k] || '', lockedList.includes(k))).join('')}
           </div>
         </details>` +
-        photoPicker(source) +
         `<div class="form-sep">${esc(I18N.t('yourName'))}</div>` +
         `<div class="form-field">
           <label for="f-author">${esc(I18N.t('yourName'))}</label>
@@ -852,6 +862,15 @@
       openSheet(state.selected.id, 'edit');
       const bio = $('#f-notes' + (I18N.isUrdu ? '_ur' : ''));
       if (bio && !bio.disabled) { bio.scrollIntoView({ block: 'center' }); bio.focus(); }
+    });
+
+    // Same idea for a missing photograph: the gap on the profile is where
+    // someone notices it, so that is where the invitation belongs.
+    $('#sheetBody').addEventListener('click', e => {
+      if (!e.target.closest('[data-act="add-photo"]')) return;
+      openSheet(state.selected.id, 'edit');
+      const picker = $('#photoFile');
+      if (picker) { picker.scrollIntoView({ block: 'center' }); picker.click(); }
     });
 
     $('#sheetClose').addEventListener('click', closeSheet);

@@ -460,6 +460,29 @@ html.urdu .node-meta { font-size: .82rem; }
 
 /* ── Photo picker and review ──────────────────────────────────────────── */
 
+/* Sits where the portrait would be, so the gap itself is the prompt. */
+.photo-invite {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 1.1rem;
+  margin-block-end: 1.1rem;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  background: none;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.photo-invite:hover {
+  color: var(--teal);
+  border-color: var(--teal);
+}
+.photo-invite svg { width: 20px; height: 20px; flex: none; }
+
 .photo-field input[type="file"] {
   width: 100%;
   font: inherit;

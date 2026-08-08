@@ -132,6 +132,7 @@ const STRINGS = {
     statsUnknown: 'Unknown',
     statsFoot: 'A visit is one browser session, so opening eight profiles in one sitting counts once. Known crawlers are excluded.',
 
+    photoInvite: 'Add a photograph',
     photoSection: 'Photograph',
     photoHint: 'JPEG, PNG or WebP, up to 5 MB. It will not appear on the tree until the keeper of the record has approved it.',
     photoReplaceHint: 'There is already a photograph. Choosing a new one suggests replacing it.',
@@ -283,6 +284,7 @@ const STRINGS = {
     statsUnknown: 'نامعلوم',
     statsFoot: 'ایک وزٹ سے مراد براؤزر کا ایک سیشن ہے، یعنی ایک ہی بار میں آٹھ صفحات کھولنا ایک وزٹ شمار ہوگا۔ معلوم کرالرز شامل نہیں۔',
 
+    photoInvite: 'تصویر شامل کریں',
     photoSection: 'تصویر',
     photoHint: 'JPEG، PNG یا WebP، زیادہ سے زیادہ ۵ ایم بی۔ منتظمِ ریکارڈ کی منظوری تک یہ شجرے پر نہیں دکھائی دے گی۔',
     photoReplaceHint: 'ایک تصویر پہلے سے موجود ہے۔ نئی تصویر منتخب کرنے کا مطلب اسے بدلنے کی تجویز ہے۔',
