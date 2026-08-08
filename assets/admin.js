@@ -218,8 +218,8 @@
       await Store.setLocked(personId, locked);
     } catch (e) {
       console.error(e);
-      toast(I18N.t('errSend'), true);
-      await refresh();
+      toast(Store.describeError(e), true);
+      await refreshSafely();
     }
   }
 
@@ -234,13 +234,29 @@
     if (!$('#pane-locks').hidden) renderLocks();
   }
 
+  /* refresh() used to be called with nothing catching its failures, so an
+   * expired token produced an empty page rather than an explanation. */
+  async function refreshSafely() {
+    try {
+      await refresh();
+    } catch (e) {
+      console.error(e);
+      const msg = esc(Store.describeError(e));
+      $('#queueHost').innerHTML =
+        `<div class="notice bad">${msg}</div>` +
+        `<button class="btn btn-primary" type="button" id="reSignIn">${esc(I18N.t('adminSignIn'))}</button>`;
+      const again = $('#reSignIn');
+      if (again) again.addEventListener('click', () => { Store.signOut(); location.reload(); });
+    }
+  }
+
   function showApp() {
     $('#signin').hidden = true;
     $('#adminTabs').hidden = false;
     $('#signOutBtn').hidden = false;
     $('#backupBtn').hidden = false;
     $('#pane-queue').hidden = false;
-    refresh();
+    refreshSafely();
   }
 
   /* Download everything as one JSON file.

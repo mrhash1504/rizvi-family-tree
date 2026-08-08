@@ -18,8 +18,62 @@ const Store = (() => {
   const LS_SUGGESTIONS = 'rft-suggestions';
   const LS_TOKEN = 'rft-token';
 
-  let token = null;
-  try { token = localStorage.getItem(LS_TOKEN); } catch (e) { /* private mode */ }
+  const LS_REFRESH = 'rft-refresh';
+  const LS_EXPIRES = 'rft-expires';
+
+  let token = null, refreshToken = null, expiresAt = 0;
+  try {
+    token = localStorage.getItem(LS_TOKEN);
+    refreshToken = localStorage.getItem(LS_REFRESH);
+    expiresAt = Number(localStorage.getItem(LS_EXPIRES) || 0);
+  } catch (e) { /* private mode */ }
+
+  function saveSession(data) {
+    token = data.access_token;
+    refreshToken = data.refresh_token || refreshToken;
+    // expires_in is seconds from now. Keep a little headroom so we renew
+    // before a request can fail rather than after.
+    expiresAt = Date.now() + ((data.expires_in || 3600) * 1000);
+    try {
+      localStorage.setItem(LS_TOKEN, token);
+      if (refreshToken) localStorage.setItem(LS_REFRESH, refreshToken);
+      localStorage.setItem(LS_EXPIRES, String(expiresAt));
+    } catch (e) { /* private mode */ }
+  }
+
+  function clearSession() {
+    token = refreshToken = null;
+    expiresAt = 0;
+    try {
+      [LS_TOKEN, LS_REFRESH, LS_EXPIRES].forEach(k => localStorage.removeItem(k));
+    } catch (e) { /* private mode */ }
+  }
+
+  /* Supabase access tokens last an hour. Without this the admin panel quietly
+   * stops working partway through a review session, with no clue as to why. */
+  let refreshing = null;
+  async function ensureFreshToken() {
+    if (!live || !token || !refreshToken) return;
+    if (Date.now() < expiresAt - 60000) return;      // still good
+    if (refreshing) return refreshing;               // one renewal at a time
+
+    refreshing = (async () => {
+      try {
+        const res = await fetch(base + '/auth/v1/token?grant_type=refresh_token', {
+          method: 'POST',
+          headers: { apikey: cfg.SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refresh_token: refreshToken })
+        });
+        if (!res.ok) { clearSession(); return; }
+        saveSession(await res.json());
+      } catch (e) {
+        // Offline. Keep the session as-is so a retry can still work.
+      } finally {
+        refreshing = null;
+      }
+    })();
+    return refreshing;
+  }
 
   function headers(extra) {
     const h = Object.assign({
@@ -30,7 +84,9 @@ const Store = (() => {
     return h;
   }
 
-  async function rest(path, opts) {
+  async function rest(path, opts, _retried) {
+    await ensureFreshToken();
+
     // opts must be spread FIRST and headers applied last. The other way round,
     // any caller passing its own header (upsertPerson sends Prefer) replaces
     // the whole headers object, dropping apikey and Authorization — the
@@ -38,6 +94,14 @@ const Store = (() => {
     // gateway with 401, before it ever reaches Postgres.
     const init = Object.assign({}, opts, { headers: headers(opts && opts.headers) });
     const res = await fetch(base + '/rest/v1/' + path, init);
+
+    // A 401 while signed in usually means the token died between the check
+    // above and this request. Renew once and retry before bothering the user.
+    if (res.status === 401 && token && refreshToken && !_retried) {
+      expiresAt = 0;
+      await ensureFreshToken();
+      if (token) return rest(path, opts, true);
+    }
     if (!res.ok) {
       // Keep the status and PostgREST's own message on the error object.
       // Flattening it all into one string, as this used to, meant no caller
@@ -97,6 +161,10 @@ const Store = (() => {
         const rows = await rest('people?select=*&order=sort_order.asc');
         return rows.length ? rows : window.SEED_PEOPLE.map(p => Object.assign({}, p));
       } catch (e) {
+        // Falling back silently is fine for a visitor — better a readable
+        // tree than an error page. It is NOT fine for the admin, who could
+        // otherwise review and approve against stale data without knowing.
+        if (token) throw e;
         console.warn('Falling back to seed data:', e.message);
         return window.SEED_PEOPLE.map(p => Object.assign({}, p));
       }
@@ -158,15 +226,19 @@ const Store = (() => {
         body: JSON.stringify({ email, password })
       });
       if (!res.ok) return false;
-      const data = await res.json();
-      token = data.access_token;
-      try { localStorage.setItem(LS_TOKEN, token); } catch (e) { /* private mode */ }
+      saveSession(await res.json());
       return true;
     },
 
     signOut() {
-      token = null;
-      try { localStorage.removeItem(LS_TOKEN); } catch (e) { /* private mode */ }
+      clearSession();
+    },
+
+    /* True when we hold a token that is past its life and cannot be renewed.
+     * The admin panel uses this to send the owner back to the sign-in form
+     * rather than showing an empty screen. */
+    get sessionExpired() {
+      return !!(live && token && !refreshToken && Date.now() >= expiresAt);
     },
 
     async getPending() {
