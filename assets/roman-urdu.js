@@ -198,9 +198,22 @@
     return pre + (hit || byRule(core)) + post;
   }
 
-  function text(s) {
-    return String(s).split(/(\s+)/).map(t => (/^\s+$/.test(t) ? t : word(t))).join('');
+  /* Urdu uses its own comma, question mark and semicolon, and the rest of
+   * this record is written with Urdu-Indic numerals. Matching that keeps a
+   * relative's contribution looking like the surrounding text rather than
+   * visibly machine-made. Full stops stay as they are: Urdu's ۔ belongs at
+   * the end of a sentence, but a bare "." is just as often a decimal point
+   * or an abbreviation, and guessing wrong is worse than leaving it. */
+  const PUNCT = { ',': '،', '?': '؟', ';': '؛' };
+  const DIGITS = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+
+  function polish(s) {
+    return s.replace(/[,?;]/g, c => PUNCT[c]).replace(/[0-9]/g, d => DIGITS[+d]);
   }
 
-  window.RomanUrdu = { text: text, word: word, _rule: byRule };
+  function text(s) {
+    return polish(String(s).split(/(\s+)/).map(t => (/^\s+$/.test(t) ? t : word(t))).join(''));
+  }
+
+  window.RomanUrdu = { text: text, word: w => polish(word(w)), _rule: byRule, _raw: word };
 })();

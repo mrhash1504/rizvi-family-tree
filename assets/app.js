@@ -277,7 +277,10 @@
       (I18N.isUrdu ? `<div class="notice plain">${ICON.info}<span>${esc(I18N.t('urduFirstHint'))}</span></div>` : '') +
       (anyLocked ? `<div class="notice plain">${ICON.lock}<span>${esc(I18N.t('lockedHint'))}</span></div>` : '') +
       `<form id="editForm" novalidate>` +
-        (I18N.isUrdu ? romanToggleHTML() : '') +
+        // Shown in both languages: the English-mode form still has the Urdu
+        // fields in its collapsed section, and someone filling those in needs
+        // this just as much.
+        romanToggleHTML() +
         primary.map(k => fieldInput(k, source[k] || '', lockedList.includes(k))).join('') +
         `<details class="lang-alt"${filledInOther ? ' open' : ''}>
           <summary>${esc(otherLabel)} <span class="hint">${esc(I18N.t('otherLangHint'))}</span></summary>
