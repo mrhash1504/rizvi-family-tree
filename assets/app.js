@@ -210,7 +210,20 @@
       notices.push(`<div class="notice plain">${ICON.info}<span>${esc(I18N.t(hint))}</span></div>`);
     }
 
+    // A portrait, where we have one. Shown above everything else — for most
+    // visitors seeing the face is the point of opening the profile.
+    let portrait = '';
+    if (p.photo) {
+      const cap = I18N.pick(p, 'photo_caption');
+      portrait =
+        `<figure class="portrait">
+           <img src="${esc(p.photo)}" alt="${esc(I18N.pick(p, 'name').text)}" loading="lazy" decoding="async">
+           ${cap.text ? `<figcaption${cap.isFallback ? ' dir="ltr" style="text-align:start"' : ''}>${esc(cap.text)}</figcaption>` : ''}
+         </figure>`;
+    }
+
     $('#sheetBody').innerHTML =
+      portrait +
       `<p class="rel-line">${relationLine(p)}</p>` +
       notices.join('') +
       `<div class="fields">${rows.join('')}</div>`;

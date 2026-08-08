@@ -347,6 +347,33 @@ html.urdu .node-meta { font-size: .82rem; }
 .roman-toggle input { margin-top: .2rem; flex: none; }
 .roman-toggle b { font-weight: 600; }
 
+/* ── Portrait ─────────────────────────────────────────────────────────── */
+
+.portrait {
+  margin: 0 0 1.25rem;
+  text-align: center;
+}
+
+.portrait img {
+  max-width: min(240px, 60%);
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  /* Old photographs carry their own border; keep the frame quiet so it
+     complements rather than competes. */
+  border: 1px solid var(--line);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.13);
+}
+
+.portrait figcaption {
+  margin-block-start: 0.6rem;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+  max-width: 34ch;
+  margin-inline: auto;
+}
+
 .dot-pending {
   display: inline-grid; place-items: center;
   min-width: 16px; height: 16px;
