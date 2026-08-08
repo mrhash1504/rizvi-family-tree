@@ -31,7 +31,13 @@ const Store = (() => {
   }
 
   async function rest(path, opts) {
-    const res = await fetch(base + '/rest/v1/' + path, Object.assign({ headers: headers(opts && opts.headers) }, opts));
+    // opts must be spread FIRST and headers applied last. The other way round,
+    // any caller passing its own header (upsertPerson sends Prefer) replaces
+    // the whole headers object, dropping apikey and Authorization — the
+    // request then leaves unauthenticated and Supabase rejects it at the
+    // gateway with 401, before it ever reaches Postgres.
+    const init = Object.assign({}, opts, { headers: headers(opts && opts.headers) });
+    const res = await fetch(base + '/rest/v1/' + path, init);
     if (!res.ok) {
       // Keep the status and PostgREST's own message on the error object.
       // Flattening it all into one string, as this used to, meant no caller
