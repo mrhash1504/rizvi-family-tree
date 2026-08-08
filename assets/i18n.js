@@ -117,6 +117,14 @@ const STRINGS = {
     errServer: (code, detail) => `The database returned an error (${code}). Nothing was lost; the suggestion is still in the queue. Details: ${detail}`,
     errNetwork: 'Could not reach the database. Check your connection and try again — nothing was lost.',
 
+    adminHistory: 'Decided',
+    adminHistoryIntro: 'Everything you have already decided. Nothing is ever deleted — rejected suggestions are kept too, so you can look up what was proposed and when you decided it.',
+    adminHistoryLoading: 'Loading…',
+    adminHistoryEmpty: 'You have not decided anything yet. Approved and rejected suggestions will appear here.',
+    adminWasApproved: 'Approved',
+    adminWasRejected: 'Rejected',
+    adminDecidedMeta: (author, when) => `Suggested by ${author}${when ? ` · decided ${when}` : ''}`,
+
     adminBackup: 'Download backup',
     adminBackupWorking: 'Preparing…',
     adminBackupFailed: 'The backup could not be downloaded. Check your connection and try again.'
@@ -235,6 +243,14 @@ const STRINGS = {
     errExpired: 'آپ کی لاگ اِن مدت ختم ہو گئی ہے۔ باہر نکل کر دوبارہ لاگ اِن کریں، پھر کوشش کریں — تجویز اب بھی قطار میں موجود ہے۔',
     errServer: (code, detail) => `ڈیٹابیس نے خرابی ظاہر کی (${code})۔ کچھ ضائع نہیں ہوا؛ تجویز اب بھی قطار میں ہے۔ تفصیل: ${detail}`,
     errNetwork: 'ڈیٹابیس تک رسائی نہیں ہو سکی۔ اپنا انٹرنیٹ دیکھ کر دوبارہ کوشش کریں — کچھ ضائع نہیں ہوا۔',
+
+    adminHistory: 'فیصلہ شدہ',
+    adminHistoryIntro: 'وہ سب کچھ جس پر آپ فیصلہ کر چکے ہیں۔ کچھ بھی حذف نہیں ہوتا — مسترد شدہ تجاویز بھی محفوظ رہتی ہیں، تاکہ آپ دیکھ سکیں کہ کیا تجویز ہوا تھا اور آپ نے کب فیصلہ کیا۔',
+    adminHistoryLoading: 'لوڈ ہو رہا ہے…',
+    adminHistoryEmpty: 'آپ نے ابھی کسی تجویز پر فیصلہ نہیں کیا۔ منظور اور مسترد شدہ تجاویز یہاں دکھائی دیں گی۔',
+    adminWasApproved: 'منظور شدہ',
+    adminWasRejected: 'مسترد شدہ',
+    adminDecidedMeta: (author, when) => `تجویز کنندہ: ${author}${when ? ` · فیصلہ ${when}` : ''}`,
 
     adminBackup: 'بیک اپ ڈاؤن لوڈ کریں',
     adminBackupWorking: 'تیار ہو رہا ہے…',

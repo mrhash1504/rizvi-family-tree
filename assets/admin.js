@@ -131,6 +131,52 @@
     }
   }
 
+  /* ── decided history ────────────────────────────────────────────────
+   * The queue deliberately shows only what is still pending, so once you
+   * approve or reject something it leaves the list. Nothing is deleted
+   * though, and "what did we decide about that, and when?" is a fair
+   * question years later — so this shows the decided ones. */
+
+  async function renderHistory() {
+    const host = $('#historyHost');
+    host.innerHTML = `<p class="empty-state">${esc(I18N.t('adminHistoryLoading'))}</p>`;
+
+    let rows;
+    try {
+      rows = (await Store.getAllSuggestions()).filter(s => s.status !== 'pending');
+    } catch (e) {
+      host.innerHTML = `<div class="notice bad">${esc(Store.describeError(e))}</div>`;
+      return;
+    }
+
+    if (!rows.length) {
+      host.innerHTML = `<p class="empty-state">${esc(I18N.t('adminHistoryEmpty'))}</p>`;
+      return;
+    }
+
+    // Most recently decided first — that is what you are usually looking for.
+    rows.sort((a, b) => String(b.reviewed_at || b.created_at).localeCompare(String(a.reviewed_at || a.created_at)));
+
+    host.innerHTML = rows.map(r => {
+      const person = state.byId.get(r.person_id);
+      const who = person ? I18N.pick(person, 'name').text : (r.person_name || r.person_id);
+      const when = r.reviewed_at ? new Date(r.reviewed_at).toLocaleDateString(I18N.isUrdu ? 'ur-PK' : 'en-GB',
+        { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+      const approved = r.status === 'approved';
+      return `<div class="sugg decided">
+        <div class="sugg-head">
+          <strong>${esc(who)}</strong>
+          <span class="pill ${approved ? 'ok' : 'no'}">${esc(I18N.t(approved ? 'adminWasApproved' : 'adminWasRejected'))}</span>
+        </div>
+        <div class="sugg-change">
+          <span class="field-label">${esc(I18N.label(r.field))}</span>
+          <span class="field-value">${esc(I18N.display(r.new_value))}</span>
+        </div>
+        <div class="sugg-meta">${esc(I18N.t('adminDecidedMeta', r.author, when))}</div>
+      </div>`;
+    }).join('');
+  }
+
   /* ── lock manager ───────────────────────────────────────────────── */
 
   const LOCKABLE = window.EDITABLE_FIELDS.map(f => f.key);
@@ -263,10 +309,16 @@
 
     document.querySelectorAll('#adminTabs .tab').forEach(tab => {
       tab.addEventListener('click', () => {
+        const want = tab.dataset.pane;
         document.querySelectorAll('#adminTabs .tab').forEach(t => t.setAttribute('aria-selected', String(t === tab)));
-        $('#pane-queue').hidden = tab.dataset.pane !== 'queue';
-        $('#pane-locks').hidden = tab.dataset.pane !== 'locks';
-        if (tab.dataset.pane === 'locks') renderLocks();
+        // Derive the panes from the tabs rather than naming them one by one,
+        // so adding a tab can never again leave a pane that nothing shows.
+        document.querySelectorAll('#adminTabs .tab').forEach(t => {
+          const pane = $('#pane-' + t.dataset.pane);
+          if (pane) pane.hidden = t.dataset.pane !== want;
+        });
+        if (want === 'locks')   renderLocks();
+        if (want === 'history') renderHistory();
       });
     });
 

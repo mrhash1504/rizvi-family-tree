@@ -347,6 +347,33 @@ html.urdu .node-meta { font-size: .82rem; }
 .roman-toggle input { margin-top: .2rem; flex: none; }
 .roman-toggle b { font-weight: 600; }
 
+/* ── Decided history ──────────────────────────────────────────────────── */
+
+.sugg.decided { opacity: 0.92; }
+
+.sugg.decided .sugg-change {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  align-items: baseline;
+  margin-block: 0.4rem;
+}
+
+.sugg-meta {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.pill {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.pill.ok { background: color-mix(in srgb, var(--teal) 16%, transparent); color: var(--teal); }
+.pill.no { background: color-mix(in srgb, var(--ink-soft) 16%, transparent); color: var(--ink-soft); }
+
 /* ── Portrait ─────────────────────────────────────────────────────────── */
 
 .portrait {
