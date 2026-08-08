@@ -192,6 +192,113 @@
     }).join('');
   }
 
+  /* ── visitor statistics ─────────────────────────────────────────────
+   * Aggregated in the browser from raw rows. A family site produces a few
+   * hundred rows a month, so a SQL view would be machinery for its own sake
+   * and would need maintaining every time a question changes. */
+
+  const FLAGS = {
+    PK: '🇵🇰', IN: '🇮🇳', AE: '🇦🇪', GB: '🇬🇧', US: '🇺🇸', CA: '🇨🇦', AU: '🇦🇺',
+    SA: '🇸🇦', BD: '🇧🇩', DE: '🇩🇪', FR: '🇫🇷', NL: '🇳🇱', SE: '🇸🇪', NO: '🇳🇴',
+    QA: '🇶🇦', KW: '🇰🇼', OM: '🇴🇲', BH: '🇧🇭', IR: '🇮🇷', IQ: '🇮🇶', TR: '🇹🇷',
+    MY: '🇲🇾', SG: '🇸🇬', ZA: '🇿🇦', NZ: '🇳🇿', IE: '🇮🇪', ES: '🇪🇸', IT: '🇮🇹'
+  };
+
+  function countryName(code) {
+    if (!code) return I18N.t('statsUnknown');
+    try {
+      const dn = new Intl.DisplayNames([I18N.isUrdu ? 'ur' : 'en'], { type: 'region' });
+      return dn.of(code) || code;
+    } catch (e) { return code; }
+  }
+
+  function bar(n, max) {
+    const pct = max ? Math.round((n / max) * 100) : 0;
+    return `<span class="statbar"><span style="width:${pct}%"></span></span>`;
+  }
+
+  function tally(rows, keyOf) {
+    const m = new Map();
+    rows.forEach(r => { const k = keyOf(r); m.set(k, (m.get(k) || 0) + 1); });
+    return [...m.entries()].sort((a, b) => b[1] - a[1]);
+  }
+
+  async function renderStats() {
+    const host = $('#statsHost');
+    host.innerHTML = `<p class="empty-state">${esc(I18N.t('adminHistoryLoading'))}</p>`;
+
+    let rows;
+    try {
+      rows = await Store.getVisits(30);
+    } catch (e) {
+      host.innerHTML = `<div class="notice bad">${esc(Store.describeError(e))}</div>`;
+      return;
+    }
+
+    if (!rows.length) {
+      host.innerHTML = `<p class="empty-state">${esc(I18N.t('statsEmpty'))}</p>`;
+      return;
+    }
+
+    const num = n => esc(I18N.digits(String(n)));
+    const sessions = new Set(rows.map(r => r.session).filter(Boolean)).size;
+    const last7 = rows.filter(r => new Date(r.created_at) > new Date(Date.now() - 7 * 86400000));
+
+    /* Headline numbers. "Visits" counts browser sessions, so one relative
+     * opening eight profiles is one visit, not eight. */
+    const cards = `<div class="stat-cards">
+      <div class="stat-card"><b>${num(sessions)}</b><span>${esc(I18N.t('statsVisits'))}</span></div>
+      <div class="stat-card"><b>${num(rows.length)}</b><span>${esc(I18N.t('statsViews'))}</span></div>
+      <div class="stat-card"><b>${num(new Set(last7.map(r => r.session)).size)}</b><span>${esc(I18N.t('statsWeek'))}</span></div>
+    </div>`;
+
+    // Countries, by visit rather than by page view.
+    const bySession = new Map();
+    rows.forEach(r => { if (r.session && !bySession.has(r.session)) bySession.set(r.session, r); });
+    const countries = tally([...bySession.values()], r => r.country);
+    const cMax = countries.length ? countries[0][1] : 0;
+    const countryList = countries.map(([code, n]) =>
+      `<li><span class="flag">${FLAGS[code] || '🌐'}</span>
+           <span class="label">${esc(countryName(code))}</span>
+           ${bar(n, cMax)}<span class="n">${num(n)}</span></li>`).join('');
+
+    // Which ancestors are actually being read about.
+    const people = tally(rows.filter(r => r.path && r.path !== 'tree' && r.path !== 'admin'), r => r.path).slice(0, 12);
+    const pMax = people.length ? people[0][1] : 0;
+    const peopleList = people.map(([id, n]) => {
+      const p = state.byId.get(id);
+      return `<li><span class="label">${esc(p ? I18N.pick(p, 'name').text : id)}</span>
+                  ${bar(n, pMax)}<span class="n">${num(n)}</span></li>`;
+    }).join('');
+
+    const devices = tally([...bySession.values()], r => r.device || 'desktop');
+    const dMax = devices.length ? devices[0][1] : 0;
+    const deviceList = devices.map(([d, n]) =>
+      `<li><span class="label">${esc(I18N.t(d === 'mobile' ? 'statsMobile' : 'statsDesktop'))}</span>
+           ${bar(n, dMax)}<span class="n">${num(n)}</span></li>`).join('');
+
+    // Last 14 days, oldest first.
+    const days = [];
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date(Date.now() - i * 86400000);
+      const key = d.toISOString().slice(0, 10);
+      const n = new Set(rows.filter(r => r.created_at.slice(0, 10) === key).map(r => r.session)).size;
+      days.push({ key: key, label: d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' }), n: n });
+    }
+    const dayMax = Math.max(1, ...days.map(d => d.n));
+    const spark = `<div class="spark">${days.map(d =>
+      `<span class="spark-col" title="${esc(d.label)}: ${num(d.n)}">
+         <span style="height:${Math.round((d.n / dayMax) * 100)}%"></span></span>`).join('')}</div>
+      <div class="spark-axis"><span>${esc(days[0].label)}</span><span>${esc(days[days.length - 1].label)}</span></div>`;
+
+    host.innerHTML = cards +
+      `<h3 class="stat-h">${esc(I18N.t('statsPerDay'))}</h3>${spark}` +
+      `<h3 class="stat-h">${esc(I18N.t('statsCountries'))}</h3><ul class="stat-list">${countryList}</ul>` +
+      (peopleList ? `<h3 class="stat-h">${esc(I18N.t('statsPeople'))}</h3><ul class="stat-list">${peopleList}</ul>` : '') +
+      `<h3 class="stat-h">${esc(I18N.t('statsDevices'))}</h3><ul class="stat-list">${deviceList}</ul>` +
+      `<p class="hint stat-foot">${esc(I18N.t('statsFoot'))}</p>`;
+  }
+
   /* ── lock manager ───────────────────────────────────────────────── */
 
   const LOCKABLE = window.EDITABLE_FIELDS.map(f => f.key);
@@ -352,6 +459,7 @@
         });
         if (want === 'locks')   renderLocks();
         if (want === 'history') renderHistory();
+        if (want === 'stats')   renderStats();
       });
     });
 

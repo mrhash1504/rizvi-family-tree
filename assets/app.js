@@ -390,6 +390,36 @@
     if (out !== el.value) el.value = out;
   }
 
+  /* ── Visit counting ───────────────────────────────────────────────────
+   * Fire-and-forget to an edge function, which resolves the country from the
+   * request and records it. Nothing identifying leaves the browser: the
+   * session id is random, lives only for this tab, and is gone when it
+   * closes, so it groups page views into one visit without following anyone
+   * from one day to the next. */
+
+  function visitSession() {
+    try {
+      let s = sessionStorage.getItem('rft-session');
+      if (!s) {
+        s = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2)).slice(0, 36);
+        sessionStorage.setItem('rft-session', s);
+      }
+      return s;
+    } catch (e) { return ''; }   // private mode: just counts as a fresh visit
+  }
+
+  function trackVisit(path) {
+    // Never let statistics get in the way of the page.
+    try {
+      fetch('/api/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: path, session: visitSession() }),
+        keepalive: true
+      }).catch(() => {});
+    } catch (e) { /* ignore */ }
+  }
+
   /* ── Photo picker ─────────────────────────────────────────────────────
    * A photo is not language-specific, so it sits outside the two language
    * blocks. The chosen file uploads straight away to a pending folder and
@@ -599,6 +629,9 @@
       const nameVal = I18N.pick(p, 'name');
       $('#sheetName').innerHTML = esc(nameVal.text) + (nameVal.isFallback ? '<span class="fallback-mark">EN</span>' : '');
       renderView(p);
+      // Which ancestors the family actually reads about is the statistic
+      // worth having here — more so than a raw visit count.
+      trackVisit(p.id);
     } else {
       renderForm(p, state.mode === 'add', p);
     }
@@ -866,6 +899,8 @@
     renderSideDefault();
     renderHistory();
     renderQuestions();
+
+    trackVisit('tree');
   }
 
   init();

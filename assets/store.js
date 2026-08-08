@@ -200,6 +200,19 @@ const Store = (() => {
       } catch (e) { return {}; }
     },
 
+    /* ── statistics ───────────────────────────────────────────────────── */
+
+    /* Raw visit rows for the owner. Capped, because the admin panel
+     * aggregates them in the browser and a family site will never generate
+     * enough rows for that to be the wrong approach. */
+    async getVisits(sinceDays) {
+      if (!live) return [];
+      const since = new Date(Date.now() - (sinceDays || 30) * 86400000).toISOString();
+      return rest('visits?select=path,country,device,referrer,session,created_at'
+        + '&created_at=gte.' + encodeURIComponent(since)
+        + '&order=created_at.desc&limit=5000');
+    },
+
     /* ── photos ───────────────────────────────────────────────────────── */
 
     MAX_PHOTO_BYTES: 5 * 1024 * 1024,
