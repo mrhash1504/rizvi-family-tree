@@ -38,8 +38,18 @@
     aur: 'اور', ya: 'یا', lekin: 'لیکن', magar: 'مگر', kyunke: 'کیونکہ',
     ke_liye: 'کے لیے', liye: 'لیے', sath: 'ساتھ', bad: 'بعد', pehle: 'پہلے',
     tak: 'تک', bhi: 'بھی', nahi: 'نہیں', nahin: 'نہیں', na: 'نہ',
-    sab: 'سب', kuch: 'کچھ', koi: 'کوئی', bohot: 'بہت', bahut: 'بہت',
+    sab: 'سب', sabse: 'سب سے', kuch: 'کچھ', koi: 'کوئی', bohot: 'بہت', bahut: 'بہت',
     zyada: 'زیادہ', kam: 'کم', acha: 'اچھا', achi: 'اچھی', theek: 'ٹھیک',
+
+    /* Counting words. A family biography is full of them — "do bete, teen
+     * betiyan" — and the rules give اک for "ek" rather than ایک. */
+    ek: 'ایک', aik: 'ایک', do: 'دو', teen: 'تین', tin: 'تین', char: 'چار',
+    panch: 'پانچ', paanch: 'پانچ', chay: 'چھ', che: 'چھ', saat: 'سات',
+    aath: 'آٹھ', ath: 'آٹھ', nau: 'نو', das: 'دس', gyarah: 'گیارہ',
+    barah: 'بارہ', bees: 'بیس', pachas: 'پچاس', sau: 'سو', hazar: 'ہزار',
+    pehla: 'پہلا', pehli: 'پہلی', dusra: 'دوسرا', dusri: 'دوسری',
+    teesra: 'تیسرا', teesri: 'تیسری', akhri: 'آخری', chota: 'چھوٹا',
+    choti: 'چھوٹی', bara: 'بڑا', bari: 'بڑی', bete: 'بیٹے', betiyan: 'بیٹیاں',
 
     // verbs common in a life story
     rehta: 'رہتا', rehti: 'رہتی', rehte: 'رہتے', raha: 'رہا', rahi: 'رہی',
@@ -51,6 +61,7 @@
     // family
     walid: 'والد', walida: 'والدہ', abba: 'ابا', ammi: 'امی',
     beta: 'بیٹا', beti: 'بیٹی', bete: 'بیٹے', bachay: 'بچے', bachchay: 'بچے',
+    aulad: 'اولاد', aulaad: 'اولاد', warasat: 'وراثت', nasl: 'نسل',
     bhai: 'بھائی', behen: 'بہن', bahen: 'بہن', behnain: 'بہنیں',
     dada: 'دادا', dadi: 'دادی', nana: 'نانا', nani: 'نانی',
     chacha: 'چچا', chachi: 'چچی', mamu: 'ماموں', khala: 'خالہ', phupi: 'پھوپھی',
