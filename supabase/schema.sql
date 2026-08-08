@@ -227,10 +227,19 @@ create trigger suggestions_count
   after insert or update or delete on public.suggestions
   for each row execute function public.refresh_pending_count();
 
--- Supabase publishes every public-schema function at /rest/v1/rpc/<name>.
--- These two are trigger bodies and must not be callable by a client.
+-- Supabase publishes every public-schema function at /rest/v1/rpc/<name>, so
+-- refresh_pending_count must not stay reachable there: it is SECURITY DEFINER
+-- and would run with the owner's rights for anyone holding the anon key.
+-- Revoking is safe precisely because it is a definer function — the trigger
+-- executes as its owner and does not consult the caller's privileges.
 revoke execute on function public.refresh_pending_count() from public, anon, authenticated;
-revoke execute on function public.touch_updated_at()      from public, anon, authenticated;
+
+-- touch_updated_at must KEEP its grant. It is SECURITY INVOKER, so it runs as
+-- whoever ran the UPDATE; revoking EXECUTE here does not harden anything, it
+-- simply makes every write to people fail with 401. Nothing is exposed by
+-- granting it — PostgreSQL rejects any attempt to call a trigger function
+-- directly, so it is dead as an RPC endpoint.
+grant execute on function public.touch_updated_at() to anon, authenticated;
 
 -- Recompute from scratch, so re-running this file also repairs any drift.
 update public.people p

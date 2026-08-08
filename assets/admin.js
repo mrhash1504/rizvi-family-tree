@@ -125,7 +125,9 @@
     } catch (e) {
       console.error(e);
       card.querySelectorAll('button').forEach(b => { b.disabled = false; });
-      toast(I18N.t('errSend'), true);
+      // Say what actually went wrong. The suggestion is still safely in the
+      // queue either way — nothing has been lost, only not yet applied.
+      toast(Store.describeError(e), true);
     }
   }
 

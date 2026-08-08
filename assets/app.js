@@ -493,7 +493,9 @@
       console.error(e);
       btn.disabled = false;
       btn.querySelector('span').textContent = I18N.t('submit');
-      fail(I18N.t('errSend'));
+      // The draft is deliberately still saved at this point, so whatever they
+      // typed survives even if they close the tab and come back tomorrow.
+      fail(Store.describeError(e));
     }
   }
 

@@ -32,7 +32,24 @@ const Store = (() => {
 
   async function rest(path, opts) {
     const res = await fetch(base + '/rest/v1/' + path, Object.assign({ headers: headers(opts && opts.headers) }, opts));
-    if (!res.ok) throw new Error('supabase ' + res.status + ' ' + (await res.text()));
+    if (!res.ok) {
+      // Keep the status and PostgREST's own message on the error object.
+      // Flattening it all into one string, as this used to, meant no caller
+      // could tell "you are not allowed" from "the network is down".
+      const body = await res.text();
+      let detail = body, code = null;
+      try {
+        const j = JSON.parse(body);
+        detail = j.message || j.details || j.hint || body;
+        code = j.code || null;
+      } catch (e) { /* not JSON; keep the raw text */ }
+
+      const err = new Error('supabase ' + res.status + ': ' + detail);
+      err.status = res.status;
+      err.detail = detail;
+      err.code = code;
+      throw err;
+    }
     const text = await res.text();
     return text ? JSON.parse(text) : null;
   }
@@ -157,6 +174,18 @@ const Store = (() => {
     async getAllSuggestions() {
       if (!live) return lsGet(LS_SUGGESTIONS, []);
       return rest('suggestions?select=*&order=created_at.asc');
+    },
+
+    /* Turn a REST failure into something the admin can act on. "Check your
+     * connection" is actively misleading when the server answered promptly
+     * with 401 — it sends you to look at your wifi instead of your database. */
+    describeError(e) {
+      const s = e && e.status;
+      // An expired session is the one 401 the admin can fix themselves.
+      if (s === 401 && e.code === 'PGRST301') return I18N.t('errExpired');
+      if (s === 401 || s === 403)             return I18N.t('errPermission');
+      if (s)                                  return I18N.t('errServer', s, (e.detail || '').slice(0, 200));
+      return I18N.t('errNetwork');
     },
 
     async setSuggestionStatus(id, status) {

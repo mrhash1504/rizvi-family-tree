@@ -112,6 +112,11 @@ const STRINGS = {
     adminUnlock: 'Unlock',
     adminManageLocks: 'Manage locks',
     adminSignOut: 'Sign out',
+    errPermission: 'The database refused that change. Your suggestion is still safe in the queue — nothing was lost. This is a permissions setting, not your internet.',
+    errExpired: 'Your sign-in has expired. Sign out and back in, then try again — the suggestion is still in the queue.',
+    errServer: (code, detail) => `The database returned an error (${code}). Nothing was lost; the suggestion is still in the queue. Details: ${detail}`,
+    errNetwork: 'Could not reach the database. Check your connection and try again — nothing was lost.',
+
     adminBackup: 'Download backup',
     adminBackupWorking: 'Preparing…',
     adminBackupFailed: 'The backup could not be downloaded. Check your connection and try again.'
@@ -226,6 +231,11 @@ const STRINGS = {
     adminUnlock: 'قفل کھولیں',
     adminManageLocks: 'قفل سنبھالیں',
     adminSignOut: 'باہر نکلیں',
+    errPermission: 'ڈیٹابیس نے یہ تبدیلی قبول نہیں کی۔ آپ کی تجویز اب بھی قطار میں محفوظ ہے — کچھ ضائع نہیں ہوا۔ یہ اجازت کی ترتیب کا مسئلہ ہے، آپ کے انٹرنیٹ کا نہیں۔',
+    errExpired: 'آپ کی لاگ اِن مدت ختم ہو گئی ہے۔ باہر نکل کر دوبارہ لاگ اِن کریں، پھر کوشش کریں — تجویز اب بھی قطار میں موجود ہے۔',
+    errServer: (code, detail) => `ڈیٹابیس نے خرابی ظاہر کی (${code})۔ کچھ ضائع نہیں ہوا؛ تجویز اب بھی قطار میں ہے۔ تفصیل: ${detail}`,
+    errNetwork: 'ڈیٹابیس تک رسائی نہیں ہو سکی۔ اپنا انٹرنیٹ دیکھ کر دوبارہ کوشش کریں — کچھ ضائع نہیں ہوا۔',
+
     adminBackup: 'بیک اپ ڈاؤن لوڈ کریں',
     adminBackupWorking: 'تیار ہو رہا ہے…',
     adminBackupFailed: 'بیک اپ ڈاؤن لوڈ نہیں ہو سکا۔ اپنا انٹرنیٹ دیکھ کر دوبارہ کوشش کریں۔'
