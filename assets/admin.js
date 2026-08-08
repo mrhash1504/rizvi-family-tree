@@ -226,7 +226,9 @@
   /* ── boot ───────────────────────────────────────────────────────── */
 
   async function refresh() {
-    state.people = await Store.getPeople();
+    // strict: reviewing against a silently-substituted seed file would mean
+    // approving changes onto data that is not what is actually stored.
+    state.people = await Store.getPeople({ strict: true });
     state.people.forEach(p => { if (!Array.isArray(p.locked)) p.locked = p.locked ? [].concat(p.locked) : []; });
     state.byId = new Map(state.people.map(p => [p.id, p]));
     state.pending = await Store.getPending();

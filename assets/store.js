@@ -97,10 +97,19 @@ const Store = (() => {
 
     // A 401 while signed in usually means the token died between the check
     // above and this request. Renew once and retry before bothering the user.
-    if (res.status === 401 && token && refreshToken && !_retried) {
-      expiresAt = 0;
-      await ensureFreshToken();
-      if (token) return rest(path, opts, true);
+    if (res.status === 401 && token && !_retried) {
+      if (refreshToken) {
+        expiresAt = 0;
+        await ensureFreshToken();
+        if (token) return rest(path, opts, true);
+      } else {
+        // A token with no way to renew it is dead weight. Drop it, or it
+        // keeps poisoning every later request from this browser — including
+        // the public tree, which shares this origin and would otherwise be
+        // sending a rejected Authorization header on every page load.
+        clearSession();
+        return rest(path, opts, true);
+      }
     }
     if (!res.ok) {
       // Keep the status and PostgREST's own message on the error object.
@@ -155,16 +164,19 @@ const Store = (() => {
 
     /* ── reads ────────────────────────────────────────────────────────── */
 
-    async getPeople() {
+    /* opts.strict — caller needs real data or a real error, never a fallback.
+     * The admin passes this. It must be an explicit choice by the caller and
+     * NOT inferred from "a token exists": the tree and the admin page share
+     * an origin and therefore localStorage, so a stale token left over from
+     * an admin session would otherwise break the public tree for everyone
+     * using that browser. */
+    async getPeople(opts) {
       if (!live) return localPeople();
       try {
         const rows = await rest('people?select=*&order=sort_order.asc');
         return rows.length ? rows : window.SEED_PEOPLE.map(p => Object.assign({}, p));
       } catch (e) {
-        // Falling back silently is fine for a visitor — better a readable
-        // tree than an error page. It is NOT fine for the admin, who could
-        // otherwise review and approve against stale data without knowing.
-        if (token) throw e;
+        if (opts && opts.strict) throw e;
         console.warn('Falling back to seed data:', e.message);
         return window.SEED_PEOPLE.map(p => Object.assign({}, p));
       }
