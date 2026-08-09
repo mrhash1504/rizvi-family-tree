@@ -44,6 +44,9 @@
         state.roots.push(p);
       }
     });
+    state.children.forEach(children => {
+      children.sort((a, b) => (a.birth_order ?? Infinity) - (b.birth_order ?? Infinity));
+    });
   }
 
   const kids = id => state.children.get(id) || [];

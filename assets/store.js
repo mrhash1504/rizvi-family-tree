@@ -173,7 +173,7 @@ const Store = (() => {
     async getPeople(opts) {
       if (!live) return localPeople();
       try {
-        const rows = await rest('people?select=*&order=sort_order.asc');
+        const rows = await rest('people?select=*&order=id.asc');
         return rows.length ? rows : window.SEED_PEOPLE.map(p => Object.assign({}, p));
       } catch (e) {
         if (opts && opts.strict) throw e;
