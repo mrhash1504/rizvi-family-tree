@@ -629,6 +629,23 @@
     }
   }
 
+  /* ── breadcrumbs ───────────────────────────────────────────────── */
+
+  function renderBreadcrumbs(id) {
+    const ancestors = ancestorsOf(id).reverse();
+    if (ancestors.length === 0) return '';
+
+    const crumbs = ancestors.map(ancestorId => {
+      const ancestor = state.byId.get(ancestorId);
+      if (!ancestor) return '';
+      const name = I18N.pick(ancestor, 'name');
+      return `<button class="breadcrumb-item" type="button" data-id="${esc(ancestorId)}">${esc(name.text)}</button>`;
+    }).filter(Boolean);
+
+    if (crumbs.length === 0) return '';
+    return `<nav class="breadcrumbs">${crumbs.join('<span class="breadcrumb-sep" aria-hidden="true">›</span>')}</nav>`;
+  }
+
   /* ── sheet control ──────────────────────────────────────────────── */
 
   function openSheet(id, mode) {
@@ -643,11 +660,15 @@
 
     if (state.mode === 'view') {
       const nameVal = I18N.pick(p, 'name');
-      $('#sheetName').innerHTML = esc(nameVal.text) + (nameVal.isFallback ? '<span class="fallback-mark">EN</span>' : '');
+      $('#sheetName').innerHTML = renderBreadcrumbs(p.id) + esc(nameVal.text) + (nameVal.isFallback ? '<span class="fallback-mark">EN</span>' : '');
       renderView(p);
       // Which ancestors the family actually reads about is the statistic
       // worth having here — more so than a raw visit count.
       trackVisit(p.id);
+      // Wire up breadcrumb clicks
+      $('#sheetName').querySelectorAll('.breadcrumb-item').forEach(btn => {
+        btn.addEventListener('click', () => openSheet(btn.dataset.id, 'view'));
+      });
     } else {
       renderForm(p, state.mode === 'add', p);
     }
@@ -682,6 +703,28 @@
 
   const GAP_FIELDS = ['birth', 'death', 'birthplace', 'residence', 'spouse'];
 
+  function renderGeographicTimeline() {
+    const timeline = [
+      { year: '~1850', location: 'Lucknow', era: 'Ottoman era' },
+      { year: '~1920s', location: 'Murshidabad', era: 'Early migration' },
+      { year: '~1950s', location: 'Karachi', era: 'Partition era' },
+      { year: '~1990s', location: 'Dubai/US', era: 'Global diaspora' }
+    ];
+
+    return `<div class="geo-timeline">
+      ${timeline.map((point, i) => `
+        <div class="geo-point">
+          <div class="geo-dot"></div>
+          <div class="geo-info">
+            <div class="geo-year">${esc(point.year)}</div>
+            <div class="geo-location">${esc(point.location)}</div>
+            <div class="geo-era">${esc(point.era)}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+  }
+
   function renderSideDefault() {
     const people = state.people;
     const generations = people.length ? Math.max(...people.map(p => depthOf(p.id))) : 0;
@@ -711,6 +754,10 @@
         <div class="stat"><b>${n(locked)}</b><span>${esc(I18N.t('statLocked'))}</span></div>
       </div>
       <div class="notice teal">${ICON.info}<span>${esc(I18N.t('tapPrompt'))}</span></div>
+      <div class="side-block">
+        <h3>Family Journey</h3>
+        ${renderGeographicTimeline()}
+      </div>
       <div class="side-block">
         <h3>${esc(I18N.t('mostWanted'))}</h3>
         <ol>${questions.map(q => `<li>${esc(q)}</li>`).join('')}</ol>

@@ -284,10 +284,10 @@ html.urdu .icon-btn.lang { font-family: var(--font); font-size: .78rem; padding-
   padding: .3rem .4rem .3rem .1rem;
   border-radius: 9px;
   text-align: start;
-  transition: background .12s;
+  transition: background 150ms ease, padding 150ms ease;
 }
 .node-row:hover { background: var(--surface-2); }
-.node-row.is-open > .twist svg { transform: rotate(90deg); }
+.node-row.is-open > .twist svg { transform: rotate(90deg); transition: transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1); }
 html[dir="rtl"] .twist svg { transform: rotate(180deg); }
 html[dir="rtl"] .node-row.is-open > .twist svg { transform: rotate(90deg); }
 
@@ -643,6 +643,37 @@ html.urdu .chip-tag { font-family: var(--font-ur); text-transform: none; font-si
   border-radius: 2px;
   background: var(--line-2);
   margin: .5rem auto .25rem;
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  margin-block-end: .4rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.breadcrumb-item {
+  font-size: .8rem;
+  color: var(--accent);
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  transition: text-decoration-color 150ms ease;
+}
+
+.breadcrumb-item:hover {
+  text-decoration-color: var(--accent);
+}
+
+.breadcrumb-sep {
+  color: var(--muted);
+  margin-inline: .15rem;
+  font-size: .75rem;
 }
 
 .sheet-head {
@@ -1108,6 +1139,70 @@ html[dir="rtl"] .diff-row .new::before { content: "← "; }
   margin-block-start: .15rem;
 }
 html.urdu .stat span { font-size: .82rem; }
+
+.geo-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding: .5rem 0;
+  position: relative;
+}
+
+.geo-timeline::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 7px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--line);
+}
+
+.geo-point {
+  display: flex;
+  gap: .8rem;
+  align-items: flex-start;
+  position: relative;
+  padding-inline-start: .5rem;
+}
+
+.geo-dot {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid var(--bg);
+  box-shadow: 0 0 0 2px var(--accent);
+  margin-top: 1px;
+  position: relative;
+  z-index: 1;
+}
+
+.geo-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.geo-year {
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: .02em;
+}
+
+.geo-location {
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-block-start: .15rem;
+}
+
+.geo-era {
+  font-size: .8rem;
+  color: var(--muted);
+  margin-block-start: .1rem;
+}
 
 .side-block {
   background: var(--surface);
