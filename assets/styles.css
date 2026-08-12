@@ -331,6 +331,26 @@ html.urdu .node-meta { font-size: .82rem; }
 
 .node-badges { display: inline-flex; gap: .25rem; margin-inline-start: .35rem; vertical-align: baseline; }
 
+.tree-photo {
+  flex: none;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  margin-inline: .25rem;
+}
+
+.node.is-patriarch > .node-row {
+  background: color-mix(in srgb, var(--gold-soft) 40%, transparent);
+  border-radius: 6px;
+  padding-inline: .3rem;
+}
+
+.node.is-patriarch .node-name {
+  font-weight: 600;
+  color: var(--gold);
+}
+
 .roman-toggle {
   display: flex;
   gap: .6rem;
@@ -1174,6 +1194,8 @@ html.urdu .legend-row { font-size: .86rem; }
   .tabs { padding-inline: 1.25rem; }
   .tab { font-size: .86rem; padding-inline: .85rem; }
   .wrap { padding: 1.25rem 1.25rem 4rem; }
+
+  .tree-photo { width: 40px; height: 40px; }
 
   .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
   .q-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }

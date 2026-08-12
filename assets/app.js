@@ -112,6 +112,7 @@
       const pend = state.pending[p.id] || 0;
       const isHit = hits && hits.has(p.id);
       const isDim = hits && !isHit;
+      const isPatriarch = p.id === 'hussain-ali-rizvi';
 
       const badges = [
         tagChip(p),
@@ -120,12 +121,14 @@
       ].filter(Boolean).join('');
 
       const summary = summaryLine(p);
+      const photoHtml = p.photo ? `<img class="tree-photo" src="${esc(p.photo)}" alt="${esc(nameVal.text)}" loading="lazy">` : '';
 
-      return `<li class="node${isHit ? ' is-hit' : ''}${isDim ? ' is-dim' : ''}" data-id="${esc(p.id)}">
+      return `<li class="node${isHit ? ' is-hit' : ''}${isDim ? ' is-dim' : ''}${isPatriarch ? ' is-patriarch' : ''}" data-id="${esc(p.id)}">
         <div class="node-row${isOpen ? ' is-open' : ''}">
           <button class="twist${ch.length ? '' : ' leaf'}" type="button" data-twist="${esc(p.id)}"
                   aria-label="${ch.length ? esc(I18N.t('childCount', ch.length)) : ''}"
                   aria-expanded="${isOpen}" ${ch.length ? '' : 'tabindex="-1" aria-hidden="true"'}>${ICON.chevron}</button>
+          ${photoHtml}
           <button class="node-main" type="button" data-open="${esc(p.id)}">
             <span class="node-name">${highlight(nameVal.text, q)}${nameVal.isFallback ? '<span class="fallback-mark">EN</span>' : ''}</span>
             ${badges ? `<span class="node-badges">${badges}</span>` : ''}
