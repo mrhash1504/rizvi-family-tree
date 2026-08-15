@@ -77,83 +77,6 @@
 
       <p class="result-note" id="resultNote" hidden></p>
 
-      <!-- Animated Statistics Cards -->
-      <div id="stats-container" class="stats-cards-container hidden">
-        <div class="stats-header">
-          <h2>Family Statistics</h2>
-          <button id="stats-toggle" class="stats-toggle-btn" title="Toggle statistics">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <rect x="3" y="12" width="5" height="9"></rect>
-              <rect x="14" y="3" width="5" height="18"></rect>
-              <rect x="8.5" y="8" width="5" height="13"></rect>
-            </svg>
-          </button>
-        </div>
-        <div class="stats-grid">
-          <div class="stat-card stat-primary">
-            <div class="stat-icon">👥</div>
-            <div class="stat-content">
-              <div class="stat-label">Total Members</div>
-              <div class="stat-value" data-value="104">0</div>
-              <div class="stat-meta">across 7 countries</div>
-            </div>
-          </div>
-          <div class="stat-card stat-secondary">
-            <div class="stat-icon">🌿</div>
-            <div class="stat-content">
-              <div class="stat-label">Living Today</div>
-              <div class="stat-value" data-value="0">0</div>
-              <div class="stat-meta">in the family tree</div>
-            </div>
-          </div>
-          <div class="stat-card stat-accent">
-            <div class="stat-icon">📊</div>
-            <div class="stat-content">
-              <div class="stat-label">Average Lifespan</div>
-              <div class="stat-value" data-value="68">0<span class="unit">yrs</span></div>
-              <div class="stat-meta">for documented members</div>
-            </div>
-          </div>
-          <div class="stat-card stat-info">
-            <div class="stat-icon">🎂</div>
-            <div class="stat-content">
-              <div class="stat-label">Most Common Birth Month</div>
-              <div class="stat-value" data-month="January">--<span class="count">(0)</span></div>
-              <div class="stat-meta">celebration month</div>
-            </div>
-          </div>
-        </div>
-        <div class="stats-section">
-          <h3>Geographic Distribution</h3>
-          <div class="distribution-list" id="geo-distribution"></div>
-        </div>
-        <div class="stats-section">
-          <h3>By Generation</h3>
-          <div class="generation-list" id="generation-distribution"></div>
-        </div>
-        <div class="stats-section">
-          <h3>Age Distribution</h3>
-          <div class="age-chart">
-            <div class="age-bar" data-range="0-10" style="--width: 0%"></div>
-            <div class="age-bar" data-range="10-20" style="--width: 0%"></div>
-            <div class="age-bar" data-range="20-30" style="--width: 0%"></div>
-            <div class="age-bar" data-range="30-40" style="--width: 0%"></div>
-            <div class="age-bar" data-range="40-50" style="--width: 0%"></div>
-            <div class="age-bar" data-range="50-60" style="--width: 0%"></div>
-            <div class="age-bar" data-range="60+" style="--width: 0%"></div>
-          </div>
-          <div class="age-labels">
-            <span>0-10</span>
-            <span>10-20</span>
-            <span>20-30</span>
-            <span>30-40</span>
-            <span>40-50</span>
-            <span>50-60</span>
-            <span>60+</span>
-          </div>
-        </div>
-      </div>
-
       <div id="treeHost" aria-live="polite">
         <p class="empty-state" data-i18n="loading">Loading the family tree…</p>
       </div>
@@ -179,6 +102,9 @@
   <!-- ── History ─────────────────────────────────────────────────── -->
   <section class="pane" id="pane-history" role="tabpanel" aria-labelledby="tab-history" hidden>
     <p class="section-intro" data-i18n="historyIntro"></p>
+
+    <!-- Animated Statistics Cards -->
+    <div id="stats-container" class="stats-cards-container"></div>
 
     <!-- Phase 2 Enhancements: Data Visualizations -->
     <div id="heatmap-container"></div>
