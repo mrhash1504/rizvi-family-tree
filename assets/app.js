@@ -1000,6 +1000,15 @@
         window.timelineChart = new TimelineChart('#timeline-container', state.people);
       }, 400);
     }
+    if (typeof StatisticsDashboard !== 'undefined') {
+      setTimeout(() => {
+        window.statisticsDashboard = new StatisticsDashboard(
+          '#dashboard-container',
+          state.people,
+          window.statsRenderer?.stats
+        );
+      }, 350);
+    }
 
     renderTree();
     renderSideDefault();
