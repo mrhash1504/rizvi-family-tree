@@ -969,7 +969,7 @@
       .forEach(id => { if (state.byId.has(id)) state.open.add(id); });
     if (!state.open.size) state.roots.forEach(r => state.open.add(r.id));
 
-    // Initialize stats renderer and connection lines with loaded data
+    // Initialize enhancements with loaded data
     window.allPeople = state.people;
     if (typeof StatsRenderer !== 'undefined') {
       setTimeout(() => {
@@ -980,6 +980,11 @@
       setTimeout(() => {
         window.connectionLines = new ConnectionLines('#treeHost', state.people);
       }, 500);
+    }
+    if (typeof BadgesRenderer !== 'undefined') {
+      setTimeout(() => {
+        window.badgesRenderer = new BadgesRenderer(state.people);
+      }, 300);
     }
 
     renderTree();

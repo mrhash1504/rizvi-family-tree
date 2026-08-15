@@ -1,0 +1,247 @@
+/* Role & Status Badges Styles */
+
+.enhanced-badges {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 10px;
+  background: var(--badge-bg, #f0f0f0);
+  border: 1px solid var(--badge-border, #ddd);
+  cursor: help;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.badge:hover {
+  transform: scale(1.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Patriarch/Matriarch */
+.badge-patriarch {
+  background: linear-gradient(135deg, #fef08a 0%, #fde047 100%);
+  border-color: #f59e0b;
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.badge-patriarch:hover {
+  border-color: #d97706;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 8px 4px rgba(245, 158, 11, 0.2);
+  }
+}
+
+/* Location badges (country flags) */
+.badge-location {
+  background: white;
+  border-color: #3b82f6;
+  font-size: 14px;
+  padding: 0 6px;
+  width: auto;
+  min-width: auto;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+}
+
+.badge-location:hover {
+  background: #eff6ff;
+  border-color: #1d4ed8;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+
+/* Deceased marker */
+.badge-deceased {
+  background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+  border-color: #6b7280;
+  color: #374151;
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.badge-deceased:hover {
+  opacity: 1;
+  border-color: #374151;
+}
+
+/* Most connected (many descendants) */
+.badge-connected {
+  background: linear-gradient(135deg, #c7d2fe 0%, #a5b4fc 100%);
+  border-color: #6366f1;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+.badge-connected:hover {
+  background: linear-gradient(135deg, #a5b4fc 0%, #818cf8 100%);
+  border-color: #4f46e5;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+}
+
+@keyframes shimmer {
+  0%, 100% {
+    background: linear-gradient(135deg, #c7d2fe 0%, #a5b4fc 100%);
+  }
+  50% {
+    background: linear-gradient(135deg, #a5b4fc 0%, #818cf8 100%);
+  }
+}
+
+/* Badge container in tree node */
+.node-main {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.node-main .enhanced-badges {
+  flex-shrink: 0;
+}
+
+/* Deceased styling on node */
+.node.is-deceased {
+  opacity: 0.7;
+  position: relative;
+}
+
+.node.is-deceased::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(107, 114, 128, 0.05) 10px,
+    rgba(107, 114, 128, 0.05) 20px
+  );
+  pointer-events: none;
+  border-radius: 4px;
+}
+
+/* Patriarch highlighting */
+.node.is-patriarch {
+  background: linear-gradient(90deg, rgba(254, 243, 199, 0.1) 0%, transparent 100%);
+  border-left: 3px solid #f59e0b;
+}
+
+.node.is-patriarch .node-name {
+  font-weight: 600;
+}
+
+/* Badge tooltip */
+.badge {
+  position: relative;
+}
+
+.badge::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  background: #1f2937;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  font-weight: 400;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 100;
+}
+
+.badge:hover::after {
+  opacity: 1;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .badge {
+    --badge-bg: #374151;
+    --badge-border: #4b5563;
+    background: #2d3748;
+    border-color: #4b5563;
+    color: #e5e7eb;
+  }
+
+  .badge-location {
+    background: #1f2937;
+    border-color: #60a5fa;
+  }
+
+  .badge-location:hover {
+    background: #111827;
+    border-color: #93c5fd;
+  }
+
+  .node.is-patriarch {
+    background: linear-gradient(90deg, rgba(120, 93, 20, 0.2) 0%, transparent 100%);
+    border-left-color: #fbbf24;
+  }
+
+  .badge::after {
+    background: #f3f4f6;
+    color: #1f2937;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .enhanced-badges {
+    gap: 2px;
+    margin-left: 4px;
+  }
+
+  .badge {
+    min-width: 18px;
+    height: 18px;
+    font-size: 10px;
+  }
+
+  .badge-location {
+    padding: 0 4px;
+  }
+
+  .badge:hover {
+    transform: scale(1.1);
+  }
+}
+
+@media (max-width: 480px) {
+  .enhanced-badges {
+    gap: 1px;
+    margin-left: 2px;
+  }
+
+  .badge {
+    min-width: 16px;
+    height: 16px;
+    font-size: 9px;
+  }
+
+  /* Hide some badges on very small screens */
+  .badge-connected {
+    display: none;
+  }
+}
