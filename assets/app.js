@@ -129,7 +129,7 @@
                   aria-label="${ch.length ? esc(I18N.t('childCount', ch.length)) : ''}"
                   aria-expanded="${isOpen}" ${ch.length ? '' : 'tabindex="-1" aria-hidden="true"'}>${ICON.chevron}</button>
           ${photoHtml}
-          <button class="node-main" type="button" data-open="${esc(p.id)}">
+          <button class="node-main" type="button" data-open="${esc(p.id)}" data-person-id="${esc(p.id)}">
             <span class="node-name">${highlight(nameVal.text, q)}${nameVal.isFallback ? '<span class="fallback-mark">EN</span>' : ''}</span>
             ${badges ? `<span class="node-badges">${badges}</span>` : ''}
             ${summary ? `<span class="node-meta">${esc(summary)}</span>` : ''}
@@ -969,12 +969,17 @@
       .forEach(id => { if (state.byId.has(id)) state.open.add(id); });
     if (!state.open.size) state.roots.forEach(r => state.open.add(r.id));
 
-    // Initialize stats renderer with loaded data
+    // Initialize stats renderer and connection lines with loaded data
     window.allPeople = state.people;
     if (typeof StatsRenderer !== 'undefined') {
       setTimeout(() => {
         const renderer = new StatsRenderer('#stats-container', state.people);
       }, 100);
+    }
+    if (typeof ConnectionLines !== 'undefined') {
+      setTimeout(() => {
+        window.connectionLines = new ConnectionLines('#treeHost', state.people);
+      }, 500);
     }
 
     renderTree();
