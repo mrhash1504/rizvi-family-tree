@@ -425,7 +425,9 @@
   }
 
   function trackVisit(path) {
-    // Never let statistics get in the way of the page.
+    // Only track on Netlify (which has the /api/track endpoint).
+    // Skip on GitHub Pages and other static hosts.
+    if (!window.location.hostname.includes('netlify')) return;
     try {
       fetch('/api/track', {
         method: 'POST',
