@@ -707,9 +707,10 @@
     const timeline = [
       { year: 'c. 1792–1793', location: 'Lucknow', era: 'Lucknow era' },
       { year: '~1927–1928', location: 'Murshidabad', era: 'Sister marries Nawab' },
-      { year: '~1951', location: 'Dhaka', era: 'Post-Partition diaspora' },
-      { year: '~1960s–1970s', location: 'Karachi', era: 'Pakistan migration' },
-      { year: '~1980s–2000s', location: 'Dubai/US', era: 'Global diaspora' }
+      { year: '~1950–1971', location: 'East Pakistan', era: 'Post-Partition settlement' },
+      { year: '1974–1977', location: 'Karachi', era: 'Pakistan dispersal' },
+      { year: '1971–present', location: 'Multiple cities', era: 'Pakistan (Lahore, Quetta, Peshawar, Karachi, Islamabad)' },
+      { year: '~1980s–present', location: 'Dubai/US', era: 'Global diaspora' }
     ];
 
     return `<div class="geo-timeline">
