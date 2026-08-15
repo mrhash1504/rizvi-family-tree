@@ -17,6 +17,8 @@
 <link rel="stylesheet" href="assets/enhancements/stats-cards.css">
 <link rel="stylesheet" href="assets/enhancements/connection-lines.css">
 <link rel="stylesheet" href="assets/enhancements/badges.css">
+<link rel="stylesheet" href="assets/enhancements/heatmap.css">
+<link rel="stylesheet" href="assets/enhancements/timeline.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230d5c53'/><text y='72' x='50' text-anchor='middle' font-size='58' font-family='Georgia,serif' fill='%23fff'>R</text></svg>">
 </head>
 <body>
@@ -176,6 +178,11 @@
   <!-- ── History ─────────────────────────────────────────────────── -->
   <section class="pane" id="pane-history" role="tabpanel" aria-labelledby="tab-history" hidden>
     <p class="section-intro" data-i18n="historyIntro"></p>
+
+    <!-- Phase 2 Enhancements: Data Visualizations -->
+    <div id="heatmap-container"></div>
+    <div id="timeline-container"></div>
+
     <div class="cards" id="historyHost"></div>
   </section>
 
@@ -208,6 +215,8 @@
 <script src="assets/enhancements/stats-renderer.js"></script>
 <script src="assets/enhancements/connection-lines.js"></script>
 <script src="assets/enhancements/badges.js"></script>
+<script src="assets/enhancements/heatmap.js"></script>
+<script src="assets/enhancements/timeline.js"></script>
 <script src="assets/app.js"></script>
 </body>
 </html>

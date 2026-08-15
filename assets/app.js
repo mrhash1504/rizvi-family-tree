@@ -971,6 +971,8 @@
 
     // Initialize enhancements with loaded data
     window.allPeople = state.people;
+
+    // Phase 1 enhancements
     if (typeof StatsRenderer !== 'undefined') {
       setTimeout(() => {
         const renderer = new StatsRenderer('#stats-container', state.people);
@@ -985,6 +987,18 @@
       setTimeout(() => {
         window.badgesRenderer = new BadgesRenderer(state.people);
       }, 300);
+    }
+
+    // Phase 2 enhancements
+    if (typeof GeographicHeatmap !== 'undefined') {
+      setTimeout(() => {
+        window.geographicHeatmap = new GeographicHeatmap('#heatmap-container', state.people);
+      }, 200);
+    }
+    if (typeof TimelineChart !== 'undefined') {
+      setTimeout(() => {
+        window.timelineChart = new TimelineChart('#timeline-container', state.people);
+      }, 400);
     }
 
     renderTree();
