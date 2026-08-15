@@ -969,6 +969,14 @@
       .forEach(id => { if (state.byId.has(id)) state.open.add(id); });
     if (!state.open.size) state.roots.forEach(r => state.open.add(r.id));
 
+    // Initialize stats renderer with loaded data
+    window.allPeople = state.people;
+    if (typeof StatsRenderer !== 'undefined') {
+      setTimeout(() => {
+        const renderer = new StatsRenderer('#stats-container', state.people);
+      }, 100);
+    }
+
     renderTree();
     renderSideDefault();
     renderHistory();
