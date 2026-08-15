@@ -1,0 +1,6 @@
+- [Project Overview](project_overview.md) — what the Rizvi Family Tree is and how it works
+- [Architecture Decisions](architecture_decisions.md) — why specific tech choices were made
+- [Data Model](data_model.md) — structure of the family tree and records
+- [Development History](development_history.md) — key milestones and features added
+- [Backup & Restore Procedures](backup_restore.md) — how to backup and restore the live database
+- [Family History Summary](family_history_summary.md) — ancestors, migration story, genealogy from shajra, open questions
