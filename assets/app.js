@@ -708,9 +708,9 @@
       { year: 'c. 1792–1793', location: 'Lucknow', era: 'Lucknow era' },
       { year: '~1927–1928', location: 'Murshidabad', era: 'Sister marries Nawab' },
       { year: '~1950–1971', location: 'East Pakistan', era: 'Post-Partition settlement' },
-      { year: '1974–1977', location: 'Karachi', era: 'Pakistan dispersal' },
-      { year: '1971–present', location: 'Multiple cities', era: 'Pakistan (Lahore, Quetta, Peshawar, Karachi, Islamabad)' },
-      { year: '~1980s–present', location: 'Dubai/US', era: 'Global diaspora' }
+      { year: '~1950–present', location: 'Pakistan (25+ people)', era: 'Primary diaspora – Karachi, Islamabad, Lahore, Peshawar, Quetta, Rawalpindi' },
+      { year: '~1970s–present', location: 'UAE/Dubai (10 people)', era: 'Gulf migration' },
+      { year: '~1980s–present', location: 'Global (Canada, USA, Australia, New Zealand)', era: 'International expansion' }
     ];
 
     return `<div class="geo-timeline">
