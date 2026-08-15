@@ -46,6 +46,7 @@
 
   <nav class="tabs" role="tablist" aria-label="Sections">
     <button class="tab" role="tab" id="tab-tree" aria-controls="pane-tree" aria-selected="true" data-pane="tree" data-i18n="tabTree">Family tree</button>
+    <button class="tab" role="tab" id="tab-highlights" aria-controls="pane-highlights" aria-selected="false" data-pane="highlights">Highlights &amp; stats</button>
     <button class="tab" role="tab" id="tab-history" aria-controls="pane-history" aria-selected="false" data-pane="history" data-i18n="tabHistory">History &amp; sources</button>
     <button class="tab" role="tab" id="tab-questions" aria-controls="pane-questions" aria-selected="false" data-pane="questions" data-i18n="tabQuestions">Open questions</button>
   </nav>
@@ -77,8 +78,7 @@
 
       <p class="result-note" id="resultNote" hidden></p>
 
-      <!-- Animated Statistics Cards -->
-      <div id="stats-container" class="stats-cards-container hidden">
+      <div id="treeHost" aria-live="polite">
         <div class="stats-header">
           <h2>Family Statistics</h2>
           <button id="stats-toggle" class="stats-toggle-btn" title="Toggle statistics">
@@ -131,30 +131,6 @@
           <h3>By Generation</h3>
           <div class="generation-list" id="generation-distribution"></div>
         </div>
-        <div class="stats-section">
-          <h3>Age Distribution</h3>
-          <div class="age-chart">
-            <div class="age-bar" data-range="0-10" style="--width: 0%"></div>
-            <div class="age-bar" data-range="10-20" style="--width: 0%"></div>
-            <div class="age-bar" data-range="20-30" style="--width: 0%"></div>
-            <div class="age-bar" data-range="30-40" style="--width: 0%"></div>
-            <div class="age-bar" data-range="40-50" style="--width: 0%"></div>
-            <div class="age-bar" data-range="50-60" style="--width: 0%"></div>
-            <div class="age-bar" data-range="60+" style="--width: 0%"></div>
-          </div>
-          <div class="age-labels">
-            <span>0-10</span>
-            <span>10-20</span>
-            <span>20-30</span>
-            <span>30-40</span>
-            <span>40-50</span>
-            <span>50-60</span>
-            <span>60+</span>
-          </div>
-        </div>
-      </div>
-
-      <div id="treeHost" aria-live="polite">
         <p class="empty-state" data-i18n="loading">Loading the family tree…</p>
       </div>
     </section>
@@ -175,6 +151,12 @@
     <!-- Desktop only: fills the detail column until someone is selected. -->
     <aside class="side-default" id="sideDefault" aria-hidden="true"></aside>
   </div>
+
+  <!-- ── Highlights & Stats ────────────────────────────────────── -->
+  <section class="pane" id="pane-highlights" role="tabpanel" aria-labelledby="tab-highlights" hidden>
+    <p class="section-intro">Family Statistics and Highlights</p>
+    <div id="stats-container" class="stats-cards-container hidden"></div>
+  </section>
 
   <!-- ── History ─────────────────────────────────────────────────── -->
   <section class="pane" id="pane-history" role="tabpanel" aria-labelledby="tab-history" hidden>
