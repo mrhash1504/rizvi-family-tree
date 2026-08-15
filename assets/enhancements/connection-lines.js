@@ -238,7 +238,7 @@ class ConnectionLines {
 
     const rect = this.treeHost.getBoundingClientRect();
     this.svg.setAttribute('width', rect.width);
-    this.setAttribute('height', rect.height);
+    this.svg.setAttribute('height', rect.height);
 
     // Add viewBox for responsiveness
     this.svg.setAttribute('viewBox', `0 0 ${rect.width} ${rect.height}`);
