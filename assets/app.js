@@ -427,7 +427,9 @@
   function trackVisit(path) {
     // Only track on Netlify (which has the /api/track endpoint).
     // Skip on GitHub Pages and other static hosts.
-    if (!window.location.hostname.includes('netlify')) return;
+    const isNetlify = window.location.hostname.endsWith('netlify.app') ||
+                      window.location.hostname.startsWith('rizvi-family-tree-');
+    if (!isNetlify) return;
     try {
       fetch('/api/track', {
         method: 'POST',
