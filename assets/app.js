@@ -129,7 +129,7 @@
                   aria-label="${ch.length ? esc(I18N.t('childCount', ch.length)) : ''}"
                   aria-expanded="${isOpen}" ${ch.length ? '' : 'tabindex="-1" aria-hidden="true"'}>${ICON.chevron}</button>
           ${photoHtml}
-          <button class="node-main" type="button" data-open="${esc(p.id)}" data-person-id="${esc(p.id)}">
+          <button class="node-main" type="button" data-open="${esc(p.id)}">
             <span class="node-name">${highlight(nameVal.text, q)}${nameVal.isFallback ? '<span class="fallback-mark">EN</span>' : ''}</span>
             ${badges ? `<span class="node-badges">${badges}</span>` : ''}
             ${summary ? `<span class="node-meta">${esc(summary)}</span>` : ''}
@@ -425,11 +425,7 @@
   }
 
   function trackVisit(path) {
-    // Only track on Netlify (which has the /api/track endpoint).
-    // Skip on GitHub Pages and other static hosts.
-    const isNetlify = window.location.hostname.endsWith('netlify.app') ||
-                      window.location.hostname.startsWith('rizvi-family-tree-');
-    if (!isNetlify) return;
+    // Never let statistics get in the way of the page.
     try {
       fetch('/api/track', {
         method: 'POST',
@@ -972,47 +968,6 @@
     ['ali-hussain-rizvi', 'ghulam-raza-rizvi-sr', 'afzal-hussain-rizvi', 'hussain-ali-rizvi', 'ghulam-raza-rizvi']
       .forEach(id => { if (state.byId.has(id)) state.open.add(id); });
     if (!state.open.size) state.roots.forEach(r => state.open.add(r.id));
-
-    // Initialize enhancements with loaded data
-    window.allPeople = state.people;
-
-    // Phase 1 enhancements
-    if (typeof StatsRenderer !== 'undefined') {
-      setTimeout(() => {
-        const renderer = new StatsRenderer('#stats-container', state.people);
-      }, 100);
-    }
-    if (typeof ConnectionLines !== 'undefined') {
-      setTimeout(() => {
-        window.connectionLines = new ConnectionLines('#treeHost', state.people);
-      }, 500);
-    }
-    if (typeof BadgesRenderer !== 'undefined') {
-      setTimeout(() => {
-        window.badgesRenderer = new BadgesRenderer(state.people);
-      }, 300);
-    }
-
-    // Phase 2 enhancements
-    if (typeof GeographicHeatmap !== 'undefined') {
-      setTimeout(() => {
-        window.geographicHeatmap = new GeographicHeatmap('#heatmap-container', state.people);
-      }, 200);
-    }
-    if (typeof TimelineChart !== 'undefined') {
-      setTimeout(() => {
-        window.timelineChart = new TimelineChart('#timeline-container', state.people);
-      }, 400);
-    }
-    if (typeof StatisticsDashboard !== 'undefined') {
-      setTimeout(() => {
-        window.statisticsDashboard = new StatisticsDashboard(
-          '#dashboard-container',
-          state.people,
-          window.statsRenderer?.stats
-        );
-      }, 350);
-    }
 
     renderTree();
     renderSideDefault();
