@@ -196,6 +196,20 @@ create policy "owner reviews the queue"
   using (true) with check (true);
 
 
+-- ── Table grants (needed for projects created after 30 Oct 2026) ───────
+-- From 30 October 2026 Supabase no longer grants the Data API roles access
+-- to NEW tables in "public" automatically. Row-level security (above) still
+-- decides which rows each role may touch; these grants only let the roles
+-- reach the tables at all. Harmless to re-run, and harmless on a project
+-- that already has the grants.
+
+grant select                         on public.people      to anon;
+grant select, insert, update, delete on public.people      to authenticated, service_role;
+
+grant insert                         on public.suggestions to anon;
+grant select, insert, update, delete on public.suggestions to authenticated, service_role;
+
+
 -- ── Public pending counts ──────────────────────────────────────────────
 -- The tree shows a small badge when a person has suggestions awaiting
 -- review, without exposing the suggestions themselves.
