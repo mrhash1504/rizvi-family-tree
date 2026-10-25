@@ -210,6 +210,27 @@ grant insert                         on public.suggestions to anon;
 grant select, insert, update, delete on public.suggestions to authenticated, service_role;
 
 
+-- ── Keep-alive heartbeat ───────────────────────────────────────────────
+-- The daily GitHub job calls public.keepalive() so the free plan sees real
+-- write activity and does not pause the project. The table has RLS on and no
+-- direct grants; only the security-definer function can touch it.
+create table if not exists public.keepalive (
+  id int primary key default 1 check (id = 1),
+  pinged_at timestamptz not null default now(),
+  pings bigint not null default 0
+);
+alter table public.keepalive enable row level security;
+revoke all on public.keepalive from anon, authenticated;
+insert into public.keepalive (id) values (1) on conflict do nothing;
+
+create or replace function public.keepalive()
+returns timestamptz language sql security definer set search_path = '' as $$
+  update public.keepalive set pinged_at = now(), pings = pings + 1 where id = 1 returning pinged_at;
+$$;
+revoke all on function public.keepalive() from public;
+grant execute on function public.keepalive() to anon, authenticated, service_role;
+
+
 -- ── Public pending counts ──────────────────────────────────────────────
 -- The tree shows a small badge when a person has suggestions awaiting
 -- review, without exposing the suggestions themselves.

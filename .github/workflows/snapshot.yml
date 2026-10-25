@@ -12,9 +12,9 @@ name: Snapshot the family tree
 
 on:
   schedule:
-    # 06:12 UTC every Monday and Thursday (twice a week: Supabase pauses after 7 days, so weekly was cutting it fine). Odd minute on purpose — the top of the hour is
+    # 06:12 UTC every day (Supabase warned again even with twice-weekly read-only runs, so the job now also WRITES a heartbeat row daily). Odd minute on purpose — the top of the hour is
     # when every scheduled job on GitHub fires at once and runs late.
-    - cron: '12 6 * * 1,4'
+    - cron: '12 6 * * *'
   # Also runnable by hand from the Actions tab.
   workflow_dispatch:
 
@@ -38,6 +38,17 @@ jobs:
 
       - name: Read the tree from Supabase
         run: node tools/snapshot.js
+
+      - name: Heartbeat write (keeps Supabase from pausing the project)
+        run: |
+          curl -fsS -X POST \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            -H "Content-Type: application/json" -d '{}' \
+            "$SUPABASE_URL/rest/v1/rpc/keepalive" && echo " heartbeat ok"
+        env:
+          SUPABASE_URL: https://rwseryuxuvrcoddntnho.supabase.co
+          SUPABASE_ANON_KEY: sb_publishable_ZRb6ga-P_M0TRJE8pegoFw_deK5yUHU
 
       - name: Commit if the record changed
         run: |
